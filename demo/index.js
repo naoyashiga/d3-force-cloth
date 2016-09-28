@@ -11,10 +11,6 @@ class Viz {
     this.drawLink = this.drawLink.bind(this)
     this.drawNode = this.drawNode.bind(this)
 
-    // this.state = {
-    //   input: '',
-    // };
-
     const n = 20
 
     this.nodes = d3.range(n * n).map((i) => {
@@ -46,8 +42,11 @@ class Viz {
 
     this.canvas = document.getElementById('canvas')
     this.context = this.canvas.getContext('2d')
-    this.width = this.canvas.width
-    this.height = this.canvas.height
+    this.width = window.innerWidth
+    this.height = window.innerHeight
+    this.canvas.width = this.width
+    this.canvas.height = this.height
+
 
     this.simulation = d3.forceSimulation(this.nodes)
     .force('charge', d3.forceManyBody().strength(-30))
@@ -120,7 +119,7 @@ class Viz {
 
   drawNode(d) {
     this.context.moveTo(d.x + 3, d.y)
-    this.context.lineTo(d.x, d.y, 3, 0, 2 * Math.PI)
+    this.context.arc(d.x, d.y, 3, 0, 2 * Math.PI)
   }
 
 }
