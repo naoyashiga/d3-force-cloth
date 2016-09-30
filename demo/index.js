@@ -2,6 +2,8 @@ const d3 = require("d3")
 
 class Viz {
   constructor() {
+    this.width = window.innerWidth
+    this.height = window.innerHeight
 
     this.ticked = this.ticked.bind(this)
     this.dragSubject = this.dragSubject.bind(this)
@@ -11,48 +13,68 @@ class Viz {
     this.drawLink = this.drawLink.bind(this)
     this.drawNode = this.drawNode.bind(this)
 
-    const n = 20
+    const n = 8
 
-    this.nodes = d3.range(n * n).map((i) => {
+    this.nodes = d3.range(n).map((i) => {
       return {
-        index: i
+        index: i,
+        // x: Math.random() * this.width,
+        // y: Math.random() * this.height
       }
     })
 
     this.links = []
 
-    for (let y = 0; y < n; ++y) {
-      for(let x = 0; x < n; ++x) {
-        if(y > 0) {
-          this.links.push({
-            source: (y - 1) * n + x,
-            target: y * n + x
-          })
-        }
+    for (var i = 0; i < n - 1; i++) {
 
-        if(x > 0) {
-          this.links.push({
-            source: y * n + (x - 1),
-            target: y * n + x
-          })
-        }
+      console.log();
+
+      const rndIndex = Math.floor(Math.random() * n)
+
+      let a = rndIndex + 1;
+
+      if(a < n) {
+      this.links.push({
+        source: rndIndex,
+        target: a
+      })
       }
+
     }
+
+    // for (let y = 0; y < n; y++) {
+    //   for(let x = 0; x < n; x++) {
+    //     if(y > 0) {
+    //       this.links.push({
+    //         // source: Math.random() * 20,
+    //         source: (y - 1) * n + x,
+    //         target: y * n + x
+    //       })
+    //     }
+    //
+    //     if(x > 0) {
+    //       this.links.push({
+    //         // source: Math.random() * 20,
+    //         source: y * n + (x - 1),
+    //         target: y * n + x
+    //       })
+    //     }
+    //   }
+    // }
 
 
     this.canvas = document.getElementById('canvas')
     this.context = this.canvas.getContext('2d')
-    this.width = window.innerWidth
-    this.height = window.innerHeight
     this.canvas.width = this.width
     this.canvas.height = this.height
 
 
     this.simulation = d3.forceSimulation(this.nodes)
-    .force('charge', d3.forceManyBody().strength(-30))
-    .force('link', d3.forceLink(this.links).strength(1).distance(20).iterations(10))
+    .force('charge', d3.forceManyBody().strength(-300))
+    .force('link', d3.forceLink(this.links).strength(1).distance(2).iterations(1))
     .on('tick', this.ticked)
 
+    console.log(this.links);
     d3.select(this.canvas)
     .call(d3.drag()
       .container(this.canvas)
@@ -72,6 +94,8 @@ class Viz {
     this.context.strokeStyle = '#aaa'
     this.context.stroke()
 
+    // this.context.fillStyle = '#aaa'
+    // this.context.fill()
     this.context.beginPath()
     this.nodes.forEach(this.drawNode)
     this.context.fill()
@@ -112,14 +136,16 @@ class Viz {
   }
 
   drawLink(d) {
+    // console.log(d);
     this.context.moveTo(d.source.x, d.source.y)
     this.context.lineTo(d.target.x, d.target.y)
 
   }
 
   drawNode(d) {
-    this.context.moveTo(d.x + 3, d.y)
-    this.context.arc(d.x, d.y, 3, 0, 2 * Math.PI)
+    const radius = 10
+    this.context.moveTo(d.x + radius, d.y)
+    this.context.arc(d.x, d.y, radius, 0, 2 * Math.PI)
   }
 
 }
